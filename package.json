@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "auth": "node build/auth-cli.js",
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "start": "node build/index.js"
