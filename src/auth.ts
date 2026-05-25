@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import { google } from "googleapis";
 
-const TOKENS_PATH = path.join(process.cwd(), "tokens.json");
+const TOKENS_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "tokens.json");
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;

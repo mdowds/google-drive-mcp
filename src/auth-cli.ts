@@ -2,10 +2,11 @@ import "dotenv/config";
 import fs from "fs";
 import http from "http";
 import path from "path";
+import { fileURLToPath } from "url";
 import { URL } from "url";
 import { google } from "googleapis";
 
-const TOKENS_PATH = path.join(process.cwd(), "tokens.json");
+const TOKENS_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "tokens.json");
 const PORT = 3000;
 const REDIRECT_URI = `http://localhost:${PORT}/callback`;
 const SCOPES = [
