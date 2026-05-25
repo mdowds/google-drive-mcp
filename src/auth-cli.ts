@@ -11,6 +11,7 @@ const REDIRECT_URI = `http://localhost:${PORT}/callback`;
 const SCOPES = [
   "https://www.googleapis.com/auth/spreadsheets",
   "https://www.googleapis.com/auth/drive.file",
+  "https://www.googleapis.com/auth/documents",
 ];
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
