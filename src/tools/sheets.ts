@@ -212,6 +212,61 @@ export function registerSheetsTools(server: McpServer) {
   );
 
   server.tool(
+    "sheets_batch_update_values",
+    "Write values to multiple ranges in a Google Spreadsheet in a single request",
+    {
+      spreadsheetId: z.string().describe("The spreadsheet ID"),
+      updates: z
+        .array(
+          z.object({
+            range: z.string().describe("A1 notation range, e.g. 'Sheet1!A1'"),
+            values: z.array(z.array(z.unknown())).describe("2D array of values to write"),
+          })
+        )
+        .describe("Array of range/values pairs to update"),
+    },
+    async ({ spreadsheetId, updates }) => {
+      try {
+        const res = await sheets.spreadsheets.values.batchUpdate({
+          spreadsheetId,
+          requestBody: {
+            valueInputOption: "USER_ENTERED",
+            data: updates.map(({ range, values }) => ({ range, values: values as string[][] })),
+          },
+        });
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                {
+                  totalUpdatedSheets: res.data.totalUpdatedSheets,
+                  totalUpdatedRows: res.data.totalUpdatedRows,
+                  totalUpdatedColumns: res.data.totalUpdatedColumns,
+                  totalUpdatedCells: res.data.totalUpdatedCells,
+                  responses: res.data.responses?.map((r) => ({
+                    updatedRange: r.updatedRange,
+                    updatedRows: r.updatedRows,
+                    updatedColumns: r.updatedColumns,
+                    updatedCells: r.updatedCells,
+                  })),
+                },
+                null,
+                2
+              ),
+            },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text", text: `Error batch updating values: ${String(err)}` }],
+          isError: true,
+        };
+      }
+    }
+  );
+
+  server.tool(
     "sheets_list_sheets",
     "List all tabs (sheets) in a spreadsheet",
     {
