@@ -267,6 +267,45 @@ export function registerSheetsTools(server: McpServer) {
   );
 
   server.tool(
+    "sheets_batch_update",
+    "Execute one or more structural update requests on a spreadsheet (formatting, merging cells, inserting/deleting rows or columns, conditional formatting, etc.) using the spreadsheets.batchUpdate API. Pass an array of request objects as defined in the Sheets API.",
+    {
+      spreadsheetId: z.string().describe("The spreadsheet ID"),
+      requests: z
+        .array(z.record(z.unknown()))
+        .describe("Array of request objects per the Google Sheets API (e.g. repeatCell, mergeCells, insertDimension, updateBorders)"),
+    },
+    async ({ spreadsheetId, requests }) => {
+      try {
+        const res = await sheets.spreadsheets.batchUpdate({
+          spreadsheetId,
+          requestBody: { requests: requests as any[] },
+        });
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                {
+                  spreadsheetId: res.data.spreadsheetId,
+                  replies: res.data.replies,
+                },
+                null,
+                2
+              ),
+            },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text", text: `Error executing batchUpdate: ${String(err)}` }],
+          isError: true,
+        };
+      }
+    }
+  );
+
+  server.tool(
     "sheets_list_sheets",
     "List all tabs (sheets) in a spreadsheet",
     {
